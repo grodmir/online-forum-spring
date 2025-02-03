@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/forum_db
+    username: postgres
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  security:
+    jwt:
+      secret: my-super-secret-key
+      expiration: 10m  # ????? ????? ?????? (10 ?????)
+      issuer: forum-app  # ???????? ?????????? (???????????? ? ??????)
+
+logging:
+  level:
+    org.springframework: info
+    org.hibernate.sql: debug
