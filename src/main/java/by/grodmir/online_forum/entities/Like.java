@@ -21,7 +21,7 @@ public class Like {
     private Integer entityId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "entiry_type", nullable = false)
+    @Column(name = "entity_type", nullable = false)
     private LikeType entityType;
 
     @Column(name = "is_like", nullable = false)

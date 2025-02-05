@@ -2,9 +2,8 @@ package by.grodmir.online_forum.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,14 +28,14 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private List<Role> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Topic> topics; // Темы, созданные пользователем
+    private List<Topic> topics; // Темы, созданные пользователем
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> comments; // Комментарии пользователя
+    private List<Comment> comments; // Комментарии пользователя
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Like> likes; // Лайки пользователя
+    private List<Like> likes; // Лайки пользователя
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,7 +25,7 @@ public class Topic {
     private User user;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> comments;
+    private List<Comment> comments;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime created_at = LocalDateTime.now();
