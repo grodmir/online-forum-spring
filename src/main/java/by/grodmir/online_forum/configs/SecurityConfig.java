@@ -16,9 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,31 +24,17 @@ public class SecurityConfig {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(HttpMethod.GET, "/topics/**", "/comments/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-//                        .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-//                        .anyRequest().authenticated()
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/secured").authenticated()
-                        .requestMatchers("/info").authenticated()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/topics/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/topics/**").authenticated()
+                        .requestMatchers("/secured").authenticated() // тестовый
+                        .requestMatchers("/info").authenticated() //тестовый
+                        .requestMatchers("/admin").hasRole("ADMIN") // Панель администратора
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
