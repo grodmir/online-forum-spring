@@ -2,6 +2,10 @@ package by.grodmir.online_forum.configs;
 
 import by.grodmir.online_forum.service.UserService;
 import by.grodmir.online_forum.utils.JwtTokenUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,8 +64,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token expired");
+        } catch (UnsupportedJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unsupported JWT Token");
+        } catch (MalformedJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Malformed JWT Token");
+        } catch (SignatureException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT signature");
+        } catch (IllegalArgumentException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is empty or null");
         } catch (Exception e) {
-            handlerExceptionResolver.resolveException(request, response, null, e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while processing JWT");
         }
     }
 }

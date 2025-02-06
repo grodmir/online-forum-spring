@@ -1,8 +1,9 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.RegisterUserDto;
+import by.grodmir.online_forum.dtos.user.RegisterUserDto;
 import by.grodmir.online_forum.entities.User;
 import by.grodmir.online_forum.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,27 +17,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    private UserRepository userRepository;
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    private RoleService roleService;
-    private PasswordEncoder passwordEncoder;
-
+    private final UserRepository userRepository;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);

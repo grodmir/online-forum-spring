@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Integer> {
-    Optional<Topic> findByTitle(String title);
+    Optional<Topic> findById(Integer id);
 }

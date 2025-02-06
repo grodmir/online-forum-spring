@@ -1,4 +1,4 @@
-package by.grodmir.online_forum.dtos;
+package by.grodmir.online_forum.dtos.topic;
 
 import lombok.Data;
 

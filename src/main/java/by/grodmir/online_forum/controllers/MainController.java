@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
+/**
+ * Тестовый контроллер для проверки прав доступа
+ * */
 @RestController
 @RequiredArgsConstructor
 public class MainController {
