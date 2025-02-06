@@ -4,7 +4,6 @@ import by.grodmir.online_forum.dtos.user.RegisterUserDto;
 import by.grodmir.online_forum.entities.User;
 import by.grodmir.online_forum.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
