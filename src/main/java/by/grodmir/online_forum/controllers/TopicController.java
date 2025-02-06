@@ -1,6 +1,6 @@
 package by.grodmir.online_forum.controllers;
 
-import by.grodmir.online_forum.dtos.topic.CreateTopicDto;
+import by.grodmir.online_forum.dtos.topic.CreateAndUpdateTopicDto;
 import by.grodmir.online_forum.dtos.topic.TopicDto;
 import by.grodmir.online_forum.service.TopicService;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +21,24 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicDto> createTopic(@RequestBody CreateTopicDto createTopicDto) {
+    public ResponseEntity<TopicDto> createTopic(@RequestBody CreateAndUpdateTopicDto createTopicDto) {
         return ResponseEntity.ok(topicService.createTopic(createTopicDto));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TopicDto> getTopicById(@PathVariable Integer id) {
         return ResponseEntity.ok(topicService.getTopicById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TopicDto> updateTopic(@PathVariable Integer id,
+                                                @RequestBody CreateAndUpdateTopicDto updateTopicDto) {
+        return ResponseEntity.ok(topicService.updateTopic(id, updateTopicDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTopic(@PathVariable Integer id) {
+        topicService.deleteTopic(id);
+        return ResponseEntity.noContent().build(); // 204 no content
     }
 }

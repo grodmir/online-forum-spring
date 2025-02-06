@@ -1,6 +1,6 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.topic.CreateTopicDto;
+import by.grodmir.online_forum.dtos.topic.CreateAndUpdateTopicDto;
 import by.grodmir.online_forum.dtos.topic.TopicDto;
 import by.grodmir.online_forum.entities.Topic;
 import by.grodmir.online_forum.entities.User;
@@ -10,6 +10,7 @@ import by.grodmir.online_forum.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class TopicService {
                 .toList();
     }
 
-    public TopicDto createTopic(CreateTopicDto createTopicDto) {
+    public TopicDto createTopic(CreateAndUpdateTopicDto createTopicDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
@@ -57,6 +58,38 @@ public class TopicService {
                 .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
 
         return mapToDto(topic);
+    }
+
+    public TopicDto updateTopic(Integer id, CreateAndUpdateTopicDto updateTopicDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
+
+        if (!topic.getUser().getUsername().equals(currentUsername)) {
+            throw new AccessDeniedException("Вы не можете редактировать этот топик");
+        }
+
+        topic.setTitle(updateTopicDto.getTitle());
+        topic.setContent(updateTopicDto.getContent());
+        topicRepository.save(topic);
+
+        return mapToDto(topic);
+    }
+
+    public void deleteTopic(Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
+
+        if (!topic.getUser().getUsername().equals(currentUsername)) {
+            throw new AccessDeniedException("Вы не можете удалить этот топик");
+        }
+
+        topicRepository.delete(topic);
     }
 
     /**
