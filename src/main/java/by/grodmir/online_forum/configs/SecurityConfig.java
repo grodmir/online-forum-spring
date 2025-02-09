@@ -30,8 +30,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/topics/**", "/comments/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/topics/**", "/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/topics/**", "/comments/**", "/likes/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/topics/**", "/comments/**", "/likes/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/topics/**", "/comments/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/topics/**", "/comments/**").authenticated()
                         .requestMatchers("/secured").authenticated() // тестовый

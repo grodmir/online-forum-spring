@@ -1,5 +1,5 @@
 package by.grodmir.online_forum.entities;
 
-public enum LikeType {
+public enum EntityType {
     TOPIC, COMMENT
 }

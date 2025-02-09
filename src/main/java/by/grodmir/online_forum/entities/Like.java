@@ -22,10 +22,10 @@ public class Like {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "entity_type", nullable = false)
-    private LikeType entityType;
+    private EntityType entityType;
 
     @Column(name = "is_like", nullable = false)
-    private boolean isLike; // true = лайк, false = дизлайк
+    private boolean liked; // true = лайк, false = дизлайк
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
