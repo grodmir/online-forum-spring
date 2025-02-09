@@ -1,7 +1,7 @@
 package by.grodmir.online_forum.controllers;
 
 import by.grodmir.online_forum.dtos.comment.CommentDto;
-import by.grodmir.online_forum.dtos.comment.CreateCommentDto;
+import by.grodmir.online_forum.dtos.comment.CreateAndUpdateCommentDto;
 import by.grodmir.online_forum.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class CommentController {
 
     @PostMapping("/topic/{topicId}")
     public ResponseEntity<CommentDto> addComment(@PathVariable("topicId") Integer topicId,
-                                                 @RequestBody CreateCommentDto createCommentDto) {
+                                                 @RequestBody CreateAndUpdateCommentDto createCommentDto) {
         return ResponseEntity.ok(commentService.addComment(topicId, createCommentDto));
     }
 
@@ -33,5 +33,10 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Integer commentId) {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentDto> updateComment(@PathVariable("commentId") Integer commentId, @RequestBody CreateAndUpdateCommentDto createCommentDto) {
+        return ResponseEntity.ok(commentService.updateComment(commentId, createCommentDto));
     }
 }

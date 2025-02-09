@@ -3,6 +3,6 @@ package by.grodmir.online_forum.dtos.comment;
 import lombok.Data;
 
 @Data
-public class CreateCommentDto {
+public class CreateAndUpdateCommentDto {
     private String content;
 }

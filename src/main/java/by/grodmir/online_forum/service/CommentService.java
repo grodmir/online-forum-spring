@@ -1,7 +1,7 @@
 package by.grodmir.online_forum.service;
 
 import by.grodmir.online_forum.dtos.comment.CommentDto;
-import by.grodmir.online_forum.dtos.comment.CreateCommentDto;
+import by.grodmir.online_forum.dtos.comment.CreateAndUpdateCommentDto;
 import by.grodmir.online_forum.entities.Comment;
 import by.grodmir.online_forum.entities.Topic;
 import by.grodmir.online_forum.entities.User;
@@ -24,7 +24,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
 
-    public CommentDto addComment(Integer topicId, CreateCommentDto createCommentDto) {
+    public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден c именем: " + authentication.getName()));
@@ -59,6 +59,23 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    public CommentDto updateComment(Integer commentId, CreateAndUpdateCommentDto updateCommentDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден с id: " + commentId));
+
+        if (!currentUsername.equals(comment.getUser().getUsername())) {
+            throw new AccessDeniedException("Вы не можете редактировать этот комментарий");
+        }
+
+        comment.setContent(updateCommentDto.getContent());
+        commentRepository.save(comment);
+
+        return mapToDto(comment);
     }
 
     private CommentDto mapToDto(Comment comment) {

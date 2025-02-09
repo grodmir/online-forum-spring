@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.FORBIDDEN.value(),
-                "Acces Denied",
+                "Access Denied",
                 e.getMessage(),
                 request.getDescription(false)
         );
