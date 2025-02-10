@@ -1,7 +1,6 @@
 package by.grodmir.online_forum.controllers;
 
 import by.grodmir.online_forum.dtos.notification.NotificationDto;
-import by.grodmir.online_forum.entities.Notification;
 import by.grodmir.online_forum.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -33,11 +33,8 @@ public class LikeService {
 
         Optional<Like> existingLike = likeRepository.findByUserAndEntityIdAndEntityType(user, entityId, entityType);
         LikeDto likeDto;
-        if (existingLike.isPresent()) {
-            likeDto = updateOrRemoveLike(existingLike.get(), isLike);
-        } else {
-            likeDto = createNewLike(user, entityId, entityType, isLike);
-        }
+        likeDto = existingLike.map(like -> updateOrRemoveLike(like, isLike))
+                .orElseGet(() -> createNewLike(user, entityId, entityType, isLike));
 
         sendLikeNotification(likeDto);
         return likeDto;
@@ -103,10 +100,10 @@ public class LikeService {
     }
 
     public int countLikes(Integer entityId, EntityType entityType) {
-        return (int) likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
+        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
     }
 
     public int countDislikes(Integer entityId, EntityType entityType) {
-        return (int) likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
+        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
     }
 }

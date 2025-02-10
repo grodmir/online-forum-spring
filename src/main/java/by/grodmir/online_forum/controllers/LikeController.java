@@ -1,5 +1,6 @@
 package by.grodmir.online_forum.controllers;
 
+import by.grodmir.online_forum.dtos.like.LikeDto;
 import by.grodmir.online_forum.entities.EntityType;
 import by.grodmir.online_forum.service.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,12 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/{entityType}/{entityId}")
-    public ResponseEntity<String> toggleLike(
+    public ResponseEntity<LikeDto> toggleLike(
             @PathVariable EntityType entityType,
             @PathVariable Integer entityId,
             @RequestParam boolean isLike
     ) {
-        likeService.toggleLike(entityId, entityType, isLike);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(likeService.toggleLike(entityId, entityType, isLike));
     }
 
     @GetMapping("/{entityType}/{entityId}/count")
