@@ -1,5 +1,6 @@
 package by.grodmir.online_forum.service;
 
+import by.grodmir.online_forum.dtos.like.LikeDto;
 import by.grodmir.online_forum.entities.EntityType;
 import by.grodmir.online_forum.entities.Like;
 import by.grodmir.online_forum.entities.User;
@@ -19,47 +20,93 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class LikeService {
-    private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
     private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
 
-    public void toggleLike(Integer entityId, EntityType entityType, boolean isLike) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+    public LikeDto toggleLike(Integer entityId, EntityType entityType, boolean isLike) {
+        User user =  getAuthenticatedUser();
 
-        if (entityType == EntityType.TOPIC && !topicRepository.existsById(entityId)) {
-            throw new EntityNotFoundException("Топик с id " + entityId + " не найден");
-        } else if (entityType == EntityType.COMMENT && !commentRepository.existsById(entityId)) {
-            throw new EntityNotFoundException("Комментарий с id " + entityId + " не найден");
-        }
+        validateEntityExistence(entityId, entityType);
 
         Optional<Like> existingLike = likeRepository.findByUserAndEntityIdAndEntityType(user, entityId, entityType);
-
+        LikeDto likeDto;
         if (existingLike.isPresent()) {
-            Like like = existingLike.get();
-            if (like.isLiked() == isLike) {
-                likeRepository.delete(like);
-            } else {
-                like.setLiked(isLike);
-                likeRepository.save(like);
-            }
+            likeDto = updateOrRemoveLike(existingLike.get(), isLike);
         } else {
-            Like newLike = new Like();
-            newLike.setUser(user);
-            newLike.setEntityId(entityId);
-            newLike.setEntityType(entityType);
-            newLike.setLiked(isLike);
-            likeRepository.save(newLike);
+            likeDto = createNewLike(user, entityId, entityType, isLike);
+        }
+
+        sendLikeNotification(likeDto);
+        return likeDto;
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+    }
+
+    private void validateEntityExistence(Integer entityId, EntityType entityType) {
+        boolean exists = switch (entityType) {
+            case TOPIC -> topicRepository.existsById(entityId);
+            case COMMENT -> commentRepository.existsById(entityId);
+        };
+
+        if (!exists) {
+            throw new EntityNotFoundException(entityType + " с id " + entityId + " не найден");
         }
     }
 
-    public int countLikes(Integer entityId,EntityType entityType) {
-        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
+    private LikeDto updateOrRemoveLike(Like like, boolean isLike) {
+        if (like.isLiked() == isLike) {
+            likeRepository.delete(like);
+            return new LikeDto(like.getEntityId(), like.getEntityType(), null);
+        } else {
+            like.setLiked(isLike);
+            likeRepository.save(like);
+            return new LikeDto(like.getEntityId(), like.getEntityType(), isLike);
+        }
     }
 
-    public int countDislikes(Integer entityId,EntityType entityType) {
-        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
+    private LikeDto createNewLike(User user, Integer entityId, EntityType entityType, boolean isLike) {
+        Like newLike = new Like();
+        newLike.setUser(user);
+        newLike.setEntityId(entityId);
+        newLike.setEntityType(entityType);
+        newLike.setLiked(isLike);
+        likeRepository.save(newLike);
+        return new LikeDto(entityId, entityType, isLike);
+    }
+
+    private void sendLikeNotification(LikeDto likeDto) {
+        if (likeDto.getIsLike() == null) return;
+
+        String entityOwner = findEntityOwner(likeDto.getEntityId(), likeDto.getEntityType());
+        if (!entityOwner.equals(getAuthenticatedUser().getUsername())) {
+            String message = likeDto.getIsLike() ? "👍 Вам поставили лайк!" : "👎 Вам поставили дизлайк!";
+            notificationService.sendNotification(entityOwner, message);
+        }
+    }
+
+    private String findEntityOwner(Integer entityId, EntityType entityType) {
+        return switch (entityType) {
+            case TOPIC -> topicRepository.findById(entityId)
+                    .orElseThrow(() -> new EntityNotFoundException("Топик не найден"))
+                    .getUser().getUsername();
+            case COMMENT -> commentRepository.findById(entityId)
+                    .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден"))
+                    .getUser().getUsername();
+        };
+    }
+
+    public int countLikes(Integer entityId, EntityType entityType) {
+        return (int) likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
+    }
+
+    public int countDislikes(Integer entityId, EntityType entityType) {
+        return (int) likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
     }
 }

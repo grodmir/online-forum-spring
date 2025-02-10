@@ -30,12 +30,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/topics/**", "/comments/**", "/likes/**").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/topics/**", "/comments/**", "/likes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/notifications/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/topics/**", "/comments/**", "/notifications/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/topics/**", "/comments/**", "/likes/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/topics/**", "/comments/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/topics/**", "/comments/**").authenticated()
-                        .requestMatchers("/secured").authenticated() // тестовый
-                        .requestMatchers("/info").authenticated() //тестовый
                         .requestMatchers("/admin").hasRole("ADMIN") // Панель администратора
                         .anyRequest().permitAll()
                 )

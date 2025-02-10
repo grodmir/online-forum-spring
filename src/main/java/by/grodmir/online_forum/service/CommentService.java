@@ -23,6 +23,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
+    private final NotificationService notificationService;
 
     public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -37,6 +38,13 @@ public class CommentService {
         comment.setTopic(topic);
         comment.setContent(createCommentDto.getContent());
         commentRepository.save(comment);
+
+        if (!topic.getUser().getUsername().equals(user.getUsername())) {
+            notificationService.sendNotification(
+                    topic.getUser().getUsername(),
+                    "💬 Пользователь @" + user.getUsername() + " оставил комментарий в вашем топике."
+            );
+        }
 
         return new CommentDto(comment.getId(), user.getUsername(), comment.getContent(), comment.getCreatedAt());
     }
