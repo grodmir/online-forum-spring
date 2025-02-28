@@ -1,9 +1,9 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.notification.NotificationDto;
-import by.grodmir.online_forum.entities.Notification;
-import by.grodmir.online_forum.repositories.NotificationRepository;
-import by.grodmir.online_forum.repositories.UserRepository;
+import by.grodmir.online_forum.dto.notification.NotificationDto;
+import by.grodmir.online_forum.entity.Notification;
+import by.grodmir.online_forum.repository.NotificationRepository;
+import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

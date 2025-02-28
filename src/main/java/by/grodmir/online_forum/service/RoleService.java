@@ -1,7 +1,7 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.entities.Role;
-import by.grodmir.online_forum.repositories.RoleRepository;
+import by.grodmir.online_forum.entity.Role;
+import by.grodmir.online_forum.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

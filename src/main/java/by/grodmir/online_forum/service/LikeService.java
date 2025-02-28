@@ -1,14 +1,14 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.like.LikeDto;
-import by.grodmir.online_forum.entities.EntityType;
-import by.grodmir.online_forum.entities.Like;
-import by.grodmir.online_forum.entities.User;
+import by.grodmir.online_forum.dto.like.LikeDto;
+import by.grodmir.online_forum.entity.EntityType;
+import by.grodmir.online_forum.entity.Like;
+import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.exception.UserNotFoundException;
-import by.grodmir.online_forum.repositories.CommentRepository;
-import by.grodmir.online_forum.repositories.LikeRepository;
-import by.grodmir.online_forum.repositories.TopicRepository;
-import by.grodmir.online_forum.repositories.UserRepository;
+import by.grodmir.online_forum.repository.CommentRepository;
+import by.grodmir.online_forum.repository.LikeRepository;
+import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

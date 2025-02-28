@@ -1,13 +1,13 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.comment.CommentDto;
-import by.grodmir.online_forum.dtos.comment.CreateAndUpdateCommentDto;
-import by.grodmir.online_forum.entities.Comment;
-import by.grodmir.online_forum.entities.Topic;
-import by.grodmir.online_forum.entities.User;
-import by.grodmir.online_forum.repositories.CommentRepository;
-import by.grodmir.online_forum.repositories.TopicRepository;
-import by.grodmir.online_forum.repositories.UserRepository;
+import by.grodmir.online_forum.dto.comment.CommentDto;
+import by.grodmir.online_forum.dto.comment.CreateAndUpdateCommentDto;
+import by.grodmir.online_forum.entity.Comment;
+import by.grodmir.online_forum.entity.Topic;
+import by.grodmir.online_forum.entity.User;
+import by.grodmir.online_forum.repository.CommentRepository;
+import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

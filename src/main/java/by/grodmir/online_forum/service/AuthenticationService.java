@@ -1,11 +1,11 @@
 package by.grodmir.online_forum.service;
 
-import by.grodmir.online_forum.dtos.jwt.JwtRequest;
-import by.grodmir.online_forum.dtos.jwt.JwtResponse;
-import by.grodmir.online_forum.dtos.user.RegisterUserDto;
-import by.grodmir.online_forum.dtos.user.UserDto;
-import by.grodmir.online_forum.entities.User;
-import by.grodmir.online_forum.utils.JwtTokenUtils;
+import by.grodmir.online_forum.dto.jwt.JwtRequest;
+import by.grodmir.online_forum.dto.jwt.JwtResponse;
+import by.grodmir.online_forum.dto.user.RegisterUserDto;
+import by.grodmir.online_forum.dto.user.UserDto;
+import by.grodmir.online_forum.entity.User;
+import by.grodmir.online_forum.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
