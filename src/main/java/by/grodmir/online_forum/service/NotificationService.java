@@ -33,10 +33,10 @@ public class NotificationService {
 
     public void markAsRead(Integer notificationId, String username) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new EntityNotFoundException("Уведомление не найдено"));
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
 
         if (!notification.getReceiver().getUsername().equals(username)) {
-            throw new AccessDeniedException("Вы не можете изменять чужие уведомления");
+            throw new AccessDeniedException("You cannot change other people's notifications.");
         }
 
         notification.setIsRead(true);

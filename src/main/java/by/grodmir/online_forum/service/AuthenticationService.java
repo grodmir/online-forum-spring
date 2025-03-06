@@ -27,7 +27,7 @@ public class AuthenticationService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Неправильный логин или пароль");
+            throw new BadCredentialsException("Incorrect login or password");
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtils.generateToken(userDetails);
@@ -36,10 +36,10 @@ public class AuthenticationService {
 
     public UserDto createNewUser(@RequestBody RegisterUserDto registerUserDto) {
         if (!registerUserDto.getPassword().equals(registerUserDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("Пароли не совпадают");
+            throw new IllegalArgumentException("The passwords do not match");
         }
         if (userService.findByUsername(registerUserDto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Пользователь с указанным именем уже существует");
+            throw new IllegalArgumentException("A user with the specified name already exists");
         }
         User user = userService.createNewUser(registerUserDto);
         return new UserDto(user.getId(), user.getUsername(), user.getEmail());

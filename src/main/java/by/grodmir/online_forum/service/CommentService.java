@@ -28,13 +28,13 @@ public class CommentService {
     public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден c именем: " + authentication.getName()));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with name: " + authentication.getName()));
 
         Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new EntityNotFoundException("Топик не найден c id: " + topicId));
+                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + topicId));
 
         Comment comment = new Comment();
-        comment.setUser(user);
+        comment.setAuthor(user);
         comment.setTopic(topic);
         comment.setContent(createCommentDto.getContent());
         commentRepository.save(comment);
@@ -42,7 +42,7 @@ public class CommentService {
         if (!topic.getUser().getUsername().equals(user.getUsername())) {
             notificationService.sendNotification(
                     topic.getUser().getUsername(),
-                    "💬 Пользователь @" + user.getUsername() + " оставил комментарий в вашем топике."
+                    "💬 User @" + user.getUsername() + " left a comment in your topic."
             );
         }
 
@@ -60,10 +60,10 @@ public class CommentService {
         String currentUsername = authentication.getName();
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден с id: " + commentId));
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
 
-        if (!currentUsername.equals(comment.getUser().getUsername())) {
-            throw new AccessDeniedException("Вы не можете удалить этот комментарий");
+        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
+            throw new AccessDeniedException("You can't delete this comment");
         }
 
         commentRepository.delete(comment);
@@ -74,10 +74,10 @@ public class CommentService {
         String currentUsername = authentication.getName();
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден с id: " + commentId));
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
 
-        if (!currentUsername.equals(comment.getUser().getUsername())) {
-            throw new AccessDeniedException("Вы не можете редактировать этот комментарий");
+        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
+            throw new AccessDeniedException("You cannot edit this comment");
         }
 
         comment.setContent(updateCommentDto.getContent());
@@ -87,6 +87,6 @@ public class CommentService {
     }
 
     private CommentDto mapToDto(Comment comment) {
-        return new CommentDto(comment.getId(), comment.getUser().getUsername(), comment.getContent(), comment.getCreatedAt());
+        return new CommentDto(comment.getId(), comment.getAuthor().getUsername(), comment.getContent(), comment.getCreatedAt());
     }
 }

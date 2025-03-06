@@ -18,7 +18,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Автор комментария
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "topic_id", nullable = false)

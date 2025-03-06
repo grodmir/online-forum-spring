@@ -43,7 +43,7 @@ public class LikeService {
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     private void validateEntityExistence(Integer entityId, EntityType entityType) {
@@ -53,7 +53,7 @@ public class LikeService {
         };
 
         if (!exists) {
-            throw new EntityNotFoundException(entityType + " с id " + entityId + " не найден");
+            throw new EntityNotFoundException(entityType + " with id " + entityId + " not found");
         }
     }
 
@@ -83,7 +83,7 @@ public class LikeService {
 
         String entityOwner = findEntityOwner(likeDto.getEntityId(), likeDto.getEntityType());
         if (!entityOwner.equals(getAuthenticatedUser().getUsername())) {
-            String message = likeDto.getIsLike() ? "👍 Вам поставили лайк!" : "👎 Вам поставили дизлайк!";
+            String message = likeDto.getIsLike() ? "👍 You got a like!" : "👎 You got a dislike!";
             notificationService.sendNotification(entityOwner, message);
         }
     }
@@ -91,11 +91,11 @@ public class LikeService {
     private String findEntityOwner(Integer entityId, EntityType entityType) {
         return switch (entityType) {
             case TOPIC -> topicRepository.findById(entityId)
-                    .orElseThrow(() -> new EntityNotFoundException("Топик не найден"))
+                    .orElseThrow(() -> new EntityNotFoundException("Topic not found"))
                     .getUser().getUsername();
             case COMMENT -> commentRepository.findById(entityId)
-                    .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден"))
-                    .getUser().getUsername();
+                    .orElseThrow(() -> new EntityNotFoundException("Comment not found"))
+                    .getAuthor().getUsername();
         };
     }
 

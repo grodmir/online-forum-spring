@@ -42,7 +42,7 @@ public class TopicService {
     public TopicDto createTopic(CreateAndUpdateTopicDto createTopicDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Topic topic = new Topic();
         topic.setTitle(createTopicDto.getTitle());
@@ -55,7 +55,7 @@ public class TopicService {
 
     public TopicDto getTopicById(Integer id) {
         Topic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + id));
 
         return mapToDto(topic);
     }
@@ -65,10 +65,10 @@ public class TopicService {
         String currentUsername = authentication.getName();
 
         Topic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + id));
 
         if (!topic.getUser().getUsername().equals(currentUsername)) {
-            throw new AccessDeniedException("Вы не можете редактировать этот топик");
+            throw new AccessDeniedException("You cannot edit this topic");
         }
 
         topic.setTitle(updateTopicDto.getTitle());
@@ -83,10 +83,10 @@ public class TopicService {
         String currentUsername = authentication.getName();
 
         Topic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Топик не найден с id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + id));
 
         if (!topic.getUser().getUsername().equals(currentUsername)) {
-            throw new AccessDeniedException("Вы не можете удалить этот топик");
+            throw new AccessDeniedException("You can't delete this topic");
         }
 
         topicRepository.delete(topic);

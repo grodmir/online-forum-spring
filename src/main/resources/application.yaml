@@ -30,4 +30,4 @@ spring:
 logging:
   level:
     org.springframework: info
-    org.hibernate.sql: debug
+    org.hibernate.sql: info
