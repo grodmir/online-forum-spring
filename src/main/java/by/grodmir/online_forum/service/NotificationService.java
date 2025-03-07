@@ -2,12 +2,14 @@ package by.grodmir.online_forum.service;
 
 import by.grodmir.online_forum.dto.notification.NotificationDto;
 import by.grodmir.online_forum.entity.Notification;
+import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.repository.NotificationRepository;
 import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,27 +20,22 @@ public class NotificationService {
     private final UserRepository userRepository;
 
     public void sendNotification(String username, String message) {
-        userRepository.findByUsername(username).ifPresent(user -> {
-            Notification notification = new Notification();
-            notification.setReceiver(user);
-            notification.setMessage(message);
-            notificationRepository.save(notification);
-        });
+        User receiver = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
+        notificationRepository.save(createNotification(receiver, message));
     }
 
     public List<NotificationDto> getUserNotifications(String username) {
-        List<Notification> notifications = notificationRepository.findByReceiverUsernameOrderByCreatedAtDesc(username);
-        return notifications.stream().map(this::mapToDto).toList();
+        return notificationRepository.findByReceiverUsernameOrderByCreatedAtDesc(username)
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
+    @Transactional
     public void markAsRead(Integer notificationId, String username) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
-
-        if (!notification.getReceiver().getUsername().equals(username)) {
-            throw new AccessDeniedException("You cannot change other people's notifications.");
-        }
-
+        Notification notification = findNotificationById(notificationId);
+        checkNotificationOwnership(notification, username);
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
@@ -51,5 +48,23 @@ public class NotificationService {
                 notification.getIsRead(),
                 notification.getCreatedAt()
         );
+    }
+
+    private Notification createNotification(User receiver, String message) {
+        Notification notification = new Notification();
+        notification.setReceiver(receiver);
+        notification.setMessage(message);
+        return notification;
+    }
+
+    private Notification findNotificationById(Integer notificationId) {
+        return notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
+    }
+
+    private void checkNotificationOwnership(Notification notification, String username) {
+        if (!notification.getReceiver().getUsername().equals(username)) {
+            throw new AccessDeniedException("You cannot modify other users' notifications");
+        }
     }
 }

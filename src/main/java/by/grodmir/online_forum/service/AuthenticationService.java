@@ -35,13 +35,21 @@ public class AuthenticationService {
     }
 
     public UserDto createNewUser(@RequestBody RegisterUserDto registerUserDto) {
-        if (!registerUserDto.getPassword().equals(registerUserDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("The passwords do not match");
-        }
-        if (userService.findByUsername(registerUserDto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("A user with the specified name already exists");
-        }
+        validatePasswordsMatch(registerUserDto.getPassword(), registerUserDto.getConfirmPassword());
+        validateUsernameIsUnique(registerUserDto.getUsername());
         User user = userService.createNewUser(registerUserDto);
         return new UserDto(user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    private void validatePasswordsMatch(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("The passwords do not match");
+        }
+    }
+
+    private void validateUsernameIsUnique(String username) {
+        if (userService.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("A user with the specified name already exists");
+        }
     }
 }

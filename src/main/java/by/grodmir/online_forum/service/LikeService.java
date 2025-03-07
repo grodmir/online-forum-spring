@@ -40,6 +40,14 @@ public class LikeService {
         return likeDto;
     }
 
+    public int countLikes(Integer entityId, EntityType entityType) {
+        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
+    }
+
+    public int countDislikes(Integer entityId, EntityType entityType) {
+        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
+    }
+
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getName())
@@ -97,13 +105,5 @@ public class LikeService {
                     .orElseThrow(() -> new EntityNotFoundException("Comment not found"))
                     .getAuthor().getUsername();
         };
-    }
-
-    public int countLikes(Integer entityId, EntityType entityType) {
-        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, true);
-    }
-
-    public int countDislikes(Integer entityId, EntityType entityType) {
-        return likeRepository.countByEntityIdAndEntityTypeAndLiked(entityId, entityType, false);
     }
 }

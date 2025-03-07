@@ -26,12 +26,8 @@ public class CommentService {
     private final NotificationService notificationService;
 
     public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with name: " + authentication.getName()));
-
-        Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + topicId));
+        User user = getCurrentUser();
+        Topic topic = findTopicById(topicId);
 
         Comment comment = new Comment();
         comment.setAuthor(user);
@@ -39,14 +35,9 @@ public class CommentService {
         comment.setContent(createCommentDto.getContent());
         commentRepository.save(comment);
 
-        if (!topic.getUser().getUsername().equals(user.getUsername())) {
-            notificationService.sendNotification(
-                    topic.getUser().getUsername(),
-                    "💬 User @" + user.getUsername() + " left a comment in your topic."
-            );
-        }
+        sendNotificationIfNeeded(topic, user);
 
-        return new CommentDto(comment.getId(), user.getUsername(), comment.getContent(), comment.getCreatedAt());
+        return mapToDto(comment);
     }
 
     public List<CommentDto> getCommentsByTopicId(Integer topicId) {
@@ -56,29 +47,19 @@ public class CommentService {
     }
 
     public void deleteComment(Integer commentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
+        User user = getCurrentUser();
+        Comment comment = findCommentById(commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
-
-        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
-            throw new AccessDeniedException("You can't delete this comment");
-        }
-
+        checkCommentOwnership(comment, user.getUsername());
         commentRepository.delete(comment);
     }
 
     public CommentDto updateComment(Integer commentId, CreateAndUpdateCommentDto updateCommentDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
+        User user = getCurrentUser();
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+        Comment comment = findCommentById(commentId);
 
-        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
-            throw new AccessDeniedException("You cannot edit this comment");
-        }
+        checkCommentOwnership(comment, user.getUsername());
 
         comment.setContent(updateCommentDto.getContent());
         commentRepository.save(comment);
@@ -88,5 +69,36 @@ public class CommentService {
 
     private CommentDto mapToDto(Comment comment) {
         return new CommentDto(comment.getId(), comment.getAuthor().getUsername(), comment.getContent(), comment.getCreatedAt());
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with name: " + authentication.getName()));
+    }
+
+    private Topic findTopicById(Integer topicId) {
+        return topicRepository.findById(topicId)
+                .orElseThrow(() -> new EntityNotFoundException("Topic not found with id: " + topicId));
+    }
+
+    private Comment findCommentById(Integer commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+    }
+
+    private void checkCommentOwnership(Comment comment, String currentUsername) {
+        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
+            throw new AccessDeniedException("You don't have permission to perform this action");
+        }
+    }
+
+    private void sendNotificationIfNeeded(Topic topic, User commentAuthor) {
+        if (!topic.getUser().getUsername().equals(commentAuthor.getUsername())) {
+            notificationService.sendNotification(
+                    topic.getUser().getUsername(),
+                    "💬 User @" + commentAuthor.getUsername() + " left a comment in your topic."
+            );
+        }
     }
 }
