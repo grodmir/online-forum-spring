@@ -5,7 +5,6 @@ import by.grodmir.online_forum.dto.jwt.JwtResponse;
 import by.grodmir.online_forum.dto.user.RegisterUserDto;
 import by.grodmir.online_forum.dto.user.UserDto;
 import by.grodmir.online_forum.entity.User;
-import by.grodmir.online_forum.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,7 +19,7 @@ public class AuthenticationService {
     private final UserService userService;
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenService jwtTokenService;
 
     public JwtResponse createAuthToken(@RequestBody JwtRequest authRequest) {
         try {
@@ -30,7 +29,7 @@ public class AuthenticationService {
             throw new BadCredentialsException("Incorrect login or password");
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenUtils.generateToken(userDetails);
+        String token = jwtTokenService.generateToken(userDetails);
         return new JwtResponse(token);
     }
 

@@ -1,7 +1,7 @@
 package by.grodmir.online_forum.config;
 
 import by.grodmir.online_forum.service.UserService;
-import by.grodmir.online_forum.util.JwtTokenUtils;
+import by.grodmir.online_forum.service.JwtTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -27,7 +27,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserService userService;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     protected void doFilterInternal(
@@ -43,14 +43,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            final String username = jwtTokenUtils.extractUsername(jwt);
+            final String username = jwtTokenService.extractUsername(jwt);
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (username != null && authentication == null) {
                 UserDetails userDetails = userService.loadUserByUsername(username);
 
-                if (jwtTokenUtils.isTokenValid(jwt, userDetails)) {
+                if (jwtTokenService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities()
                     );

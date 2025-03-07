@@ -29,10 +29,7 @@ public class CommentService {
         User user = getCurrentUser();
         Topic topic = findTopicById(topicId);
 
-        Comment comment = new Comment();
-        comment.setAuthor(user);
-        comment.setTopic(topic);
-        comment.setContent(createCommentDto.getContent());
+        Comment comment = buildComment(user, topic, createCommentDto);
         commentRepository.save(comment);
 
         sendNotificationIfNeeded(topic, user);
@@ -69,6 +66,14 @@ public class CommentService {
 
     private CommentDto mapToDto(Comment comment) {
         return new CommentDto(comment.getId(), comment.getAuthor().getUsername(), comment.getContent(), comment.getCreatedAt());
+    }
+
+    private Comment buildComment(User user, Topic topic, CreateAndUpdateCommentDto createCommentDto) {
+        return Comment.builder()
+                .content(createCommentDto.getContent())
+                .author(user)
+                .topic(topic)
+                .build();
     }
 
     private User getCurrentUser() {

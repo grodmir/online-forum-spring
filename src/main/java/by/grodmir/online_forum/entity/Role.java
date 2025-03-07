@@ -1,10 +1,14 @@
 package by.grodmir.online_forum.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "roles")
 public class Role {
     @Id

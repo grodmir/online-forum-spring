@@ -22,7 +22,7 @@ public class NotificationService {
     public void sendNotification(String username, String message) {
         User receiver = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
-        notificationRepository.save(createNotification(receiver, message));
+        notificationRepository.save(buildNotification(receiver, message));
     }
 
     public List<NotificationDto> getUserNotifications(String username) {
@@ -50,11 +50,11 @@ public class NotificationService {
         );
     }
 
-    private Notification createNotification(User receiver, String message) {
-        Notification notification = new Notification();
-        notification.setReceiver(receiver);
-        notification.setMessage(message);
-        return notification;
+    private Notification buildNotification(User receiver, String message) {
+        return Notification.builder()
+                .receiver(receiver)
+                .message(message)
+                .build();
     }
 
     private Notification findNotificationById(Integer notificationId) {

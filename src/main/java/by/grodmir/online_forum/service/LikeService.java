@@ -77,11 +77,12 @@ public class LikeService {
     }
 
     private LikeDto createNewLike(User user, Integer entityId, EntityType entityType, boolean isLike) {
-        Like newLike = new Like();
-        newLike.setUser(user);
-        newLike.setEntityId(entityId);
-        newLike.setEntityType(entityType);
-        newLike.setLiked(isLike);
+        Like newLike = Like.builder()
+                .user(user)
+                .entityId(entityId)
+                .entityType(entityType)
+                .liked(isLike)
+                .build();
         likeRepository.save(newLike);
         return new LikeDto(entityId, entityType, isLike);
     }

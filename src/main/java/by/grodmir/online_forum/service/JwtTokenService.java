@@ -1,4 +1,4 @@
-package by.grodmir.online_forum.util;
+package by.grodmir.online_forum.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtTokenUtils {
+public class JwtTokenService {
 
     private final SecretKey key;
     private final Duration jwtExpiration;
 
-    public JwtTokenUtils(
+    public JwtTokenService(
             @Value("${spring.security.jwt.secret}") String secretBase64,
             @Value("${spring.security.jwt.expiration}") Duration jwtExpiration
     ) {
