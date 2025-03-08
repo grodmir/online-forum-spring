@@ -2,6 +2,7 @@ package by.grodmir.online_forum.service;
 
 import by.grodmir.online_forum.dto.user.RegisterUserDto;
 import by.grodmir.online_forum.entity.User;
+import by.grodmir.online_forum.mapper.UserMapper;
 import by.grodmir.online_forum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -37,27 +37,12 @@ public class UserService implements UserDetailsService {
                     return new UsernameNotFoundException("User not found: " + username);
                 });
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .toList()
-        );
+        return userMapper.toUserDetails(user);
     }
 
     @Transactional
     public User createNewUser(RegisterUserDto registrationUserDto) {
-        User user = buildUserFromDto(registrationUserDto);
+        User user = userMapper.toEntity(registrationUserDto);
         return userRepository.save(user);
-    }
-
-    private User buildUserFromDto(RegisterUserDto dto) {
-        return User.builder()
-                .username(dto.getUsername())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .email(dto.getEmail())
-                .roles(List.of(roleService.getRoleUser()))
-                .build();
     }
 }

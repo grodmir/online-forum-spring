@@ -16,7 +16,6 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenService {
-
     private final SecretKey key;
     private final Duration jwtExpiration;
 

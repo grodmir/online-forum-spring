@@ -3,6 +3,7 @@ package by.grodmir.online_forum.service;
 import by.grodmir.online_forum.dto.notification.NotificationDto;
 import by.grodmir.online_forum.entity.Notification;
 import by.grodmir.online_forum.entity.User;
+import by.grodmir.online_forum.mapper.NotificationMapper;
 import by.grodmir.online_forum.repository.NotificationRepository;
 import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,17 +19,18 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final NotificationMapper notificationMapper;
 
     public void sendNotification(String username, String message) {
         User receiver = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
-        notificationRepository.save(buildNotification(receiver, message));
+        notificationRepository.save(notificationMapper.toEntity(message, receiver));
     }
 
     public List<NotificationDto> getUserNotifications(String username) {
         return notificationRepository.findByReceiverUsernameOrderByCreatedAtDesc(username)
                 .stream()
-                .map(this::mapToDto)
+                .map(notificationMapper::toDto)
                 .toList();
     }
 
@@ -38,23 +40,6 @@ public class NotificationService {
         checkNotificationOwnership(notification, username);
         notification.setIsRead(true);
         notificationRepository.save(notification);
-    }
-
-    public NotificationDto mapToDto(Notification notification) {
-        return new NotificationDto(
-                notification.getId(),
-                notification.getReceiver().getUsername(),
-                notification.getMessage(),
-                notification.getIsRead(),
-                notification.getCreatedAt()
-        );
-    }
-
-    private Notification buildNotification(User receiver, String message) {
-        return Notification.builder()
-                .receiver(receiver)
-                .message(message)
-                .build();
     }
 
     private Notification findNotificationById(Integer notificationId) {
