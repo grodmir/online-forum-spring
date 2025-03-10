@@ -28,6 +28,7 @@ public class Comment {
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic; // Тема, к которой относится комментарий
 
+    @Builder.Default
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

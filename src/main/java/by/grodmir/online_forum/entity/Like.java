@@ -31,6 +31,7 @@ public class Like {
     @Column(name = "is_like", nullable = false)
     private boolean liked; // true = лайк, false = дизлайк
 
+    @Builder.Default
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }
