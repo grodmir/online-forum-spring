@@ -8,7 +8,6 @@ import by.grodmir.online_forum.mapper.LikeMapper;
 import by.grodmir.online_forum.repository.CommentRepository;
 import by.grodmir.online_forum.repository.LikeRepository;
 import by.grodmir.online_forum.repository.TopicRepository;
-import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

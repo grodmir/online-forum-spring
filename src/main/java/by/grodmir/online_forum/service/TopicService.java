@@ -4,16 +4,12 @@ import by.grodmir.online_forum.dto.topic.CreateAndUpdateTopicDto;
 import by.grodmir.online_forum.dto.topic.TopicDto;
 import by.grodmir.online_forum.entity.Topic;
 import by.grodmir.online_forum.entity.User;
-import by.grodmir.online_forum.exception.UserNotFoundException;
 import by.grodmir.online_forum.mapper.TopicMapper;
 import by.grodmir.online_forum.repository.TopicRepository;
-import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +33,7 @@ public class TopicService {
     @Transactional
     public TopicDto createTopic(CreateAndUpdateTopicDto createTopicDto) {
         User user = securityService.getCurrentUser();
-        Topic topic = buildTopic(createTopicDto, user);
+        Topic topic = topicMapper.toEntity(createTopicDto, user);
         topicRepository.save(topic);
         return topicMapper.toDto(topic);
     }
@@ -51,7 +47,7 @@ public class TopicService {
     public TopicDto updateTopic(Integer id, CreateAndUpdateTopicDto updateTopicDto) {
         Topic topic = findTopicById(id);
         checkTopicOwnership(topic);
-        updateTopicFields(topic, updateTopicDto);
+        topicMapper.updateFromDto(updateTopicDto, topic);
         return topicMapper.toDto(topic);
     }
 
@@ -72,18 +68,5 @@ public class TopicService {
         if (!topic.getUser().getUsername().equals(currentUsername)) {
             throw new AccessDeniedException("You don't have permission for this action");
         }
-    }
-
-    private Topic buildTopic(CreateAndUpdateTopicDto dto, User user) {
-        return Topic.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .user(user)
-                .build();
-    }
-
-    private void updateTopicFields(Topic topic, CreateAndUpdateTopicDto dto) {
-        topic.setTitle(dto.getTitle());
-        topic.setContent(dto.getContent());
     }
 }

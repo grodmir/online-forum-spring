@@ -8,12 +8,9 @@ import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.mapper.CommentMapper;
 import by.grodmir.online_forum.repository.CommentRepository;
 import by.grodmir.online_forum.repository.TopicRepository;
-import by.grodmir.online_forum.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
