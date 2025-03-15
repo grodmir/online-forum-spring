@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserService userService;
-
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
 
-    public JwtResponse createAuthToken(@RequestBody JwtRequest authRequest) {
+    public JwtResponse createAuthToken(JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.getUsername(), authRequest.getPassword()));
@@ -33,7 +32,7 @@ public class AuthenticationService {
         return new JwtResponse(token);
     }
 
-    public UserDto createNewUser(@RequestBody RegisterUserDto registerUserDto) {
+    public UserDto createNewUser(RegisterUserDto registerUserDto) {
         validatePasswordsMatch(registerUserDto.getPassword(), registerUserDto.getConfirmPassword());
         validateUsernameIsUnique(registerUserDto.getUsername());
         User user = userService.createNewUser(registerUserDto);

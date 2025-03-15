@@ -1,14 +1,16 @@
 package by.grodmir.online_forum.dto.topic;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Builder
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class TopicDto {
     private int id;
     private String title;
     private String content;
     private String author;
-    private String dateOfCreation;
+    private String createdAt;
 }

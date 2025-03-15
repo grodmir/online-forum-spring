@@ -1,12 +1,14 @@
 package by.grodmir.online_forum.dto.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Builder
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class NotificationDto {
     private Integer id;
     private String receiverUsername;

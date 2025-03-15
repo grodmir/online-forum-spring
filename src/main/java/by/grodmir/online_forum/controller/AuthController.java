@@ -5,6 +5,7 @@ import by.grodmir.online_forum.dto.jwt.JwtResponse;
 import by.grodmir.online_forum.dto.user.RegisterUserDto;
 import by.grodmir.online_forum.dto.user.UserDto;
 import by.grodmir.online_forum.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class    AuthController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/auth")
-    public JwtResponse createAuthToken(@RequestBody JwtRequest authRequest) {
+    public JwtResponse createAuthToken(@RequestBody @Valid JwtRequest authRequest) {
         return authenticationService.createAuthToken(authRequest);
     }
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createNewUser(@RequestBody RegisterUserDto registrationUserDto) {
+    public UserDto createNewUser(@RequestBody @Valid RegisterUserDto registrationUserDto) {
         return authenticationService.createNewUser(registrationUserDto);
     }
 }

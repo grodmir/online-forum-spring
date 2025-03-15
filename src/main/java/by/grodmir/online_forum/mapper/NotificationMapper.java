@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationMapper {
     public NotificationDto toDto(Notification notification) {
-        return new NotificationDto(
-                notification.getId(),
-                notification.getReceiver().getUsername(),
-                notification.getMessage(),
-                notification.getIsRead(),
-                notification.getCreatedAt()
-        );
+        return NotificationDto.builder()
+                .id(notification.getId())
+                .receiverUsername(notification.getReceiver().getUsername())
+                .message(notification.getMessage())
+                .read(notification.getIsRead())
+                .createdAt(notification.getCreatedAt())
+                .build();
     }
 
     public Notification toEntity(String message, User receiver) {

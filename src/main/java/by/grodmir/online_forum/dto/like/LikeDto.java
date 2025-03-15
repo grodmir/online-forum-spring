@@ -1,11 +1,13 @@
 package by.grodmir.online_forum.dto.like;
 
 import by.grodmir.online_forum.entity.EntityType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Builder
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LikeDto {
     private Integer entityId;
     private EntityType entityType;

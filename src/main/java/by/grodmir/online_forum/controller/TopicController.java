@@ -3,6 +3,7 @@ package by.grodmir.online_forum.controller;
 import by.grodmir.online_forum.dto.topic.CreateAndUpdateTopicDto;
 import by.grodmir.online_forum.dto.topic.TopicDto;
 import by.grodmir.online_forum.service.TopicService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class TopicController {
     }
 
     @PostMapping
-    public TopicDto createTopic(@RequestBody CreateAndUpdateTopicDto createTopicDto) {
-        return topicService.createTopic(createTopicDto);
+    public TopicDto createTopic(@RequestBody @Valid CreateAndUpdateTopicDto topicDto) {
+        return topicService.createTopic(topicDto);
     }
 
     @GetMapping("/{id}")
@@ -33,8 +34,8 @@ public class TopicController {
 
     @PutMapping("/{id}")
     public TopicDto updateTopic(@PathVariable Integer id,
-                                                @RequestBody CreateAndUpdateTopicDto updateTopicDto) {
-        return topicService.updateTopic(id, updateTopicDto);
+                                                @RequestBody @Valid CreateAndUpdateTopicDto topicDto) {
+        return topicService.updateTopic(id, topicDto);
     }
 
     @DeleteMapping("/{id}")

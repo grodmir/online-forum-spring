@@ -9,19 +9,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class LikeMapper {
     public LikeDto toDto(Like like, Boolean isLiked) {
-        return new LikeDto(
-                like.getEntityId(),
-                like.getEntityType(),
-                isLiked != null ? isLiked : like.isLiked()
-        );
+        return LikeDto.builder()
+                .entityId(like.getEntityId())
+                .entityType(like.getEntityType())
+                .isLike(isLiked != null ? isLiked : like.isLiked())
+                .build();
     }
 
     public LikeDto toRemovedDto(Like like) {
-        return new LikeDto(
-                like.getEntityId(),
-                like.getEntityType(),
-                null
-        );
+        return LikeDto.builder()
+                .entityId(like.getEntityId())
+                .entityType(like.getEntityType())
+                .isLike(null)
+                .build();
     }
 
     public Like toEntity(User user, Integer entityId, EntityType entityType, boolean isLike) {

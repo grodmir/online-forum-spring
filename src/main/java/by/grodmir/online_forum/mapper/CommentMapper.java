@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentMapper {
     public CommentDto toDto(Comment comment) {
-        return new CommentDto(
-                comment.getId(),
-                comment.getAuthor().getUsername(),
-                comment.getContent(),
-                comment.getCreatedAt()
-        );
+        return CommentDto.builder()
+                .id(comment.getId())
+                .username(comment.getAuthor().getUsername())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
     }
 
     public Comment toEntity(CreateAndUpdateCommentDto dto, User author, Topic topic) {

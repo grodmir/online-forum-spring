@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class TopicMapper {
     public TopicDto toDto(Topic topic) {
-        return new TopicDto(
-                topic.getId(),
-                topic.getTitle(),
-                topic.getContent(),
-                topic.getUser().getUsername(),
-                topic.getCreated_at().toString()
-        );
+        return TopicDto.builder()
+                .id(topic.getId())
+                .title(topic.getTitle())
+                .content(topic.getContent())
+                .author(topic.getUser().getUsername())
+                .createdAt(topic.getCreated_at().toString())
+                .build();
     }
 
     public Topic toEntity(CreateAndUpdateTopicDto topicDto, User user) {
