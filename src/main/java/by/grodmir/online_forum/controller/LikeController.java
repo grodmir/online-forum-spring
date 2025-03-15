@@ -16,16 +16,16 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/{entityType}/{entityId}")
-    public ResponseEntity<LikeDto> toggleLike(
+    public LikeDto toggleLike(
             @PathVariable EntityType entityType,
             @PathVariable Integer entityId,
             @RequestParam boolean isLike
     ) {
-        return ResponseEntity.ok(likeService.toggleLike(entityId, entityType, isLike));
+        return likeService.toggleLike(entityId, entityType, isLike);
     }
 
     @GetMapping("/{entityType}/{entityId}/count")
-    public ResponseEntity<Map<String, Integer>> getLikeCount(
+    public Map<String, Integer> getLikeCount(
             @PathVariable EntityType entityType,
             @PathVariable Integer entityId
     ) {
@@ -33,6 +33,6 @@ public class LikeController {
                 "likes", likeService.countLikes(entityId, entityType),
                 "dislikes", likeService.countDislikes(entityId, entityType)
         );
-        return ResponseEntity.ok(response);
+        return response;
     }
 }
