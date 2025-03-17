@@ -4,7 +4,6 @@ import by.grodmir.online_forum.dto.like.LikeDto;
 import by.grodmir.online_forum.entity.EntityType;
 import by.grodmir.online_forum.service.LikeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -29,10 +28,9 @@ public class LikeController {
             @PathVariable EntityType entityType,
             @PathVariable Integer entityId
     ) {
-        Map<String, Integer> response = Map.of(
+        return Map.of(
                 "likes", likeService.countLikes(entityId, entityType),
                 "dislikes", likeService.countDislikes(entityId, entityType)
         );
-        return response;
     }
 }

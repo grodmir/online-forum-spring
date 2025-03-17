@@ -8,6 +8,7 @@ import by.grodmir.online_forum.mapper.LikeMapper;
 import by.grodmir.online_forum.repository.CommentRepository;
 import by.grodmir.online_forum.repository.LikeRepository;
 import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.validator.LikeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class LikeService {
     private final NotificationService notificationService;
     private final SecurityService securityService;
     private final LikeMapper likeMapper;
+    private final LikeValidator likeValidator;
 
     public LikeDto toggleLike(Integer entityId, EntityType entityType, boolean isLike) {
         User user =  securityService.getCurrentUser();
@@ -78,10 +80,10 @@ public class LikeService {
         if (likeDto.getIsLike() == null) return;
 
         String entityOwner = findEntityOwner(likeDto.getEntityId(), likeDto.getEntityType());
-        if (!entityOwner.equals(securityService.getCurrentUser().getUsername())) {
-            String message = likeDto.getIsLike() ? "👍 You got a like!" : "👎 You got a dislike!";
-            notificationService.sendNotification(entityOwner, message);
-        }
+        likeValidator.validateLikeOwnership(entityOwner);
+
+        String message = likeDto.getIsLike() ? "👍 You got a like!" : "👎 You got a dislike!";
+        notificationService.sendNotification(entityOwner, message);
     }
 
     private String findEntityOwner(Integer entityId, EntityType entityType) {

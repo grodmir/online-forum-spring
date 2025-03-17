@@ -4,7 +4,6 @@ import by.grodmir.online_forum.dto.notification.NotificationDto;
 import by.grodmir.online_forum.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

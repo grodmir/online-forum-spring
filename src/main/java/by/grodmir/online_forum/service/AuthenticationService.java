@@ -5,13 +5,13 @@ import by.grodmir.online_forum.dto.jwt.JwtResponse;
 import by.grodmir.online_forum.dto.user.RegisterUserDto;
 import by.grodmir.online_forum.dto.user.UserDto;
 import by.grodmir.online_forum.entity.User;
+import by.grodmir.online_forum.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +19,7 @@ public class AuthenticationService {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
+    private final UserValidator userValidator;
 
     public JwtResponse createAuthToken(JwtRequest authRequest) {
         try {
@@ -33,21 +34,12 @@ public class AuthenticationService {
     }
 
     public UserDto createNewUser(RegisterUserDto registerUserDto) {
-        validatePasswordsMatch(registerUserDto.getPassword(), registerUserDto.getConfirmPassword());
-        validateUsernameIsUnique(registerUserDto.getUsername());
+        userValidator.validateRegistration(registerUserDto);
         User user = userService.createNewUser(registerUserDto);
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail());
-    }
-
-    private void validatePasswordsMatch(String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
-            throw new IllegalArgumentException("The passwords do not match");
-        }
-    }
-
-    private void validateUsernameIsUnique(String username) {
-        if (userService.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("A user with the specified name already exists");
-        }
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package by.grodmir.online_forum.dto.user;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,4 +26,9 @@ public class RegisterUserDto {
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
     private String email;
+
+    @AssertTrue(message = "Passwords must match")
+    private boolean isPasswordsMatch() {
+        return password != null && password.equals(confirmPassword);
+    }
 }

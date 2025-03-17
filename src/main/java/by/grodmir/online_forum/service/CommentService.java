@@ -8,9 +8,9 @@ import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.mapper.CommentMapper;
 import by.grodmir.online_forum.repository.CommentRepository;
 import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.validator.CommentValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +23,7 @@ public class CommentService {
     private final NotificationService notificationService;
     private final CommentMapper commentMapper;
     private final SecurityService securityService;
+    private final CommentValidator commentValidator;
 
     public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
         User user = securityService.getCurrentUser();
@@ -45,21 +46,16 @@ public class CommentService {
     public void deleteComment(Integer commentId) {
         User user = securityService.getCurrentUser();
         Comment comment = findCommentById(commentId);
-
-        checkCommentOwnership(comment, user.getUsername());
+        commentValidator.validateCommentOwnership(comment, user.getUsername());
         commentRepository.delete(comment);
     }
 
     public CommentDto updateComment(Integer commentId, CreateAndUpdateCommentDto updateCommentDto) {
         User user = securityService.getCurrentUser();
-
         Comment comment = findCommentById(commentId);
-
-        checkCommentOwnership(comment, user.getUsername());
-
+        commentValidator.validateCommentOwnership(comment, user.getUsername());
         comment.setContent(updateCommentDto.getContent());
         commentRepository.save(comment);
-
         return commentMapper.toDto(comment);
     }
 
@@ -71,12 +67,6 @@ public class CommentService {
     private Comment findCommentById(Integer commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
-    }
-
-    private void checkCommentOwnership(Comment comment, String currentUsername) {
-        if (!currentUsername.equals(comment.getAuthor().getUsername())) {
-            throw new AccessDeniedException("You don't have permission to perform this action");
-        }
     }
 
     private void sendNotificationIfNeeded(Topic topic, User commentAuthor) {
