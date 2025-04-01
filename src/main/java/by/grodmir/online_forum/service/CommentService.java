@@ -8,6 +8,7 @@ import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.mapper.CommentMapper;
 import by.grodmir.online_forum.repository.CommentRepository;
 import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.service.kafka.CommentEventService;
 import by.grodmir.online_forum.validator.CommentValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,9 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final SecurityService securityService;
     private final CommentValidator commentValidator;
+    private final CommentEventService commentEventService;
 
-    public CommentDto addComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
+    public CommentDto createComment(Integer topicId, CreateAndUpdateCommentDto createCommentDto) {
         User user = securityService.getCurrentUser();
         Topic topic = findTopicById(topicId);
 
@@ -33,6 +35,8 @@ public class CommentService {
         commentRepository.save(comment);
 
         sendNotificationIfNeeded(topic, user);
+
+        commentEventService.publishCommentEvent(comment, "CommentCreated");
 
         return commentMapper.toDto(comment);
     }
@@ -56,6 +60,9 @@ public class CommentService {
         commentValidator.validateCommentOwnership(comment, user.getUsername());
         comment.setContent(updateCommentDto.getContent());
         commentRepository.save(comment);
+
+        commentEventService.publishCommentEvent(comment, "CommentUpdated");
+
         return commentMapper.toDto(comment);
     }
 

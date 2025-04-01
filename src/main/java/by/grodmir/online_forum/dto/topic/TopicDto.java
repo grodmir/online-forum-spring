@@ -1,5 +1,6 @@
 package by.grodmir.online_forum.dto.topic;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 @Builder
@@ -12,5 +13,6 @@ public class TopicDto {
     private String title;
     private String content;
     private String author;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private String createdAt;
 }

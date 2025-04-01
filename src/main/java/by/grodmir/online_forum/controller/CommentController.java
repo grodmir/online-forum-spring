@@ -19,7 +19,7 @@ public class CommentController {
     @PostMapping("/topic/{id}")
     public CommentDto addComment(@PathVariable("id") Integer topicId,
                                                  @RequestBody @Valid CreateAndUpdateCommentDto commentDto) {
-        return commentService.addComment(topicId, commentDto);
+        return commentService.createComment(topicId, commentDto);
     }
 
     @GetMapping("/topic/{id}")

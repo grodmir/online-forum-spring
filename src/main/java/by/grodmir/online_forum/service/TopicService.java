@@ -6,6 +6,7 @@ import by.grodmir.online_forum.entity.Topic;
 import by.grodmir.online_forum.entity.User;
 import by.grodmir.online_forum.mapper.TopicMapper;
 import by.grodmir.online_forum.repository.TopicRepository;
+import by.grodmir.online_forum.service.kafka.TopicEventService;
 import by.grodmir.online_forum.validator.TopicValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class TopicService {
     private final TopicMapper topicMapper;
     private final SecurityService securityService;
     private final TopicValidator topicValidator;
+    private final TopicEventService topicEventService;
 
     @Transactional(readOnly = true)
     public List<TopicDto> getAllTopics() {
@@ -36,6 +38,9 @@ public class TopicService {
         User user = securityService.getCurrentUser();
         Topic topic = topicMapper.toEntity(createTopicDto, user);
         topicRepository.save(topic);
+
+        topicEventService.publishTopicEvent(topic, "TopicCreated");
+
         return topicMapper.toDto(topic);
     }
 
@@ -49,6 +54,9 @@ public class TopicService {
         Topic topic = findTopicById(id);
         topicValidator.validateTopicOwner(topic);
         topicMapper.updateFromDto(updateTopicDto, topic);
+
+        topicEventService.publishTopicEvent(topic, "TopicUpdated");
+
         return topicMapper.toDto(topic);
     }
 
