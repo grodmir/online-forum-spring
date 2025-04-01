@@ -12,9 +12,9 @@ public class CommentEventService {
     private final CommentMapper commentMapper;
     private final KafkaEventPublisher kafkaEventPublisher;
 
-    public void publishCommentEvent(Comment comment, String entityType) {
+    public void publishCommentEvent(Comment comment, String eventType) {
         CommentEvent event = CommentEvent.builder()
-                .eventType("CommentCreated")
+                .eventType(eventType)
                 .payload(commentMapper.toDto(comment))
                 .build();
         kafkaEventPublisher.publishCommentEvent(event);

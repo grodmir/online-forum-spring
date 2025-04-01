@@ -14,7 +14,7 @@ public class TopicEventService {
 
     public void publishTopicEvent(Topic topic, String eventType) {
         TopicEvent event = TopicEvent.builder()
-                .eventType("TopicCreated")
+                .eventType(eventType)
                 .payload(topicMapper.toDto(topic))
                 .build();
         kafkaEventPublisher.publishTopicEvent(event);
